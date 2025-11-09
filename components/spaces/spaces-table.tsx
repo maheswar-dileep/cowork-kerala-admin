@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -16,6 +17,7 @@ import { Button } from '@/components/ui/button';
 
 interface SpacesTableProps {
   spaces: CoworkingSpace[];
+  onDelete?: (id: string) => void;
 }
 
 const getTypeBadgeVariant = (
@@ -46,7 +48,23 @@ const getTypeBadgeColor = (type: string): string => {
   }
 };
 
-export function SpacesTable({ spaces }: SpacesTableProps) {
+export function SpacesTable({ spaces, onDelete }: SpacesTableProps) {
+  const router = useRouter();
+
+  const handleEdit = (id: string) => {
+    router.push(`/spaces/edit/${id}`);
+  };
+
+  const handleView = (id: string) => {
+    router.push(`/spaces/${id}`);
+  };
+
+  const handleDelete = (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
+      onDelete?.(id);
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -86,16 +104,27 @@ export function SpacesTable({ spaces }: SpacesTableProps) {
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-end gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleEdit(space.id)}
+                  >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => handleView(space.id)}
+                  >
                     <Eye className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive hover:text-destructive"
+                    onClick={() => handleDelete(space.id, space.name)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

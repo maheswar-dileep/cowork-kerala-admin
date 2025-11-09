@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Header } from '@/components/layout/header';
 import { SpacesFilters } from '@/components/spaces/spaces-filters';
@@ -8,6 +9,15 @@ import { SpacesPagination } from '@/components/spaces/spaces-pagination';
 import { mockSpaces } from '@/lib/data/spaces';
 
 export default function SpacesPage() {
+  const router = useRouter();
+
+  const handleDelete = (id: string) => {
+    // TODO: Implement actual delete API call
+    console.log('Deleting space:', id);
+    // In real implementation, you would call an API here
+    // and then refresh the data or remove from state
+  };
+
   return (
     <AppLayout>
       <Header
@@ -16,7 +26,7 @@ export default function SpacesPage() {
         breadcrumbs={[{ label: 'Dashboard' }, { label: 'Coworking Spaces' }]}
         action={{
           label: 'Add New Space',
-          onClick: () => console.log('Add new space clicked'),
+          onClick: () => router.push('/spaces/new'),
         }}
       />
 
@@ -29,7 +39,7 @@ export default function SpacesPage() {
 
         {/* Table Section - Grows to fill available space */}
         <div className="flex-1 overflow-auto p-6">
-          <SpacesTable spaces={mockSpaces} />
+          <SpacesTable spaces={mockSpaces} onDelete={handleDelete} />
         </div>
 
         {/* Pagination - Fixed at bottom */}
