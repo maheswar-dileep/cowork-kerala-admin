@@ -20,20 +20,20 @@ export function BasicInfoTab({
   onSpaceTypeChange,
 }: BasicInfoTabProps) {
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <div className="grid gap-6 md:grid-cols-2">
+    <div className="mx-auto max-w-4xl space-y-5">
+      <div className="grid gap-5 md:grid-cols-2">
         {/* Space Name */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Space Name <span className="text-destructive">*</span>
+        <div className="space-y-1.5">
+          <label className="text-sm font-normal text-gray-700">
+            Space Name <span className="text-red-500">*</span>
           </label>
           <Input placeholder="Enter space name" />
         </div>
 
         {/* Space Type */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Space Type <span className="text-destructive">*</span>
+        <div className="space-y-1.5">
+          <label className="text-sm font-normal text-gray-700">
+            Space Type <span className="text-red-500">*</span>
           </label>
           <Select value={spaceType} onValueChange={onSpaceTypeChange}>
             <SelectTrigger>
@@ -48,9 +48,9 @@ export function BasicInfoTab({
         </div>
 
         {/* City */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            City <span className="text-destructive">*</span>
+        <div className="space-y-1.5">
+          <label className="text-sm font-normal text-gray-700">
+            City <span className="text-red-500">*</span>
           </label>
           <Select>
             <SelectTrigger>
@@ -67,9 +67,9 @@ export function BasicInfoTab({
         </div>
 
         {/* Space Category */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Space Category <span className="text-destructive">*</span>
+        <div className="space-y-1.5">
+          <label className="text-sm font-normal text-gray-700">
+            Space Category <span className="text-red-500">*</span>
           </label>
           <Select>
             <SelectTrigger>
@@ -85,14 +85,12 @@ export function BasicInfoTab({
       </div>
 
       {/* Short Description */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium">
-            Short Description <span className="text-destructive">*</span>
+          <label className="text-sm font-normal text-gray-700">
+            Short Description <span className="text-red-500">*</span>
           </label>
-          <span className="text-xs text-muted-foreground">
-            0/200 characters
-          </span>
+          <span className="text-xs text-gray-500">0/200 characters</span>
         </div>
         <Textarea
           placeholder="Brief description of the space"
@@ -102,21 +100,19 @@ export function BasicInfoTab({
       </div>
 
       {/* Long Description */}
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium">
-            Long Description <span className="text-destructive">*</span>
+          <label className="text-sm font-normal text-gray-700">
+            Long Description <span className="text-red-500">*</span>
           </label>
-          <span className="text-xs text-muted-foreground">
-            0/1000 characters
-          </span>
+          <span className="text-xs text-gray-500">0/1000 characters</span>
         </div>
         <Textarea
           placeholder="Detailed description of the space, facilities, and unique features"
           className="min-h-[150px] resize-none"
           maxLength={1000}
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-gray-500">
           Describe your space in detail. Include information about the location,
           facilities, and what makes it unique.
         </p>

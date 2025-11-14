@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
+import { Header } from '@/components/layout/header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { BasicInfoTab } from '@/components/spaces/form-tabs/basic-info-tab';
 import { AmenitiesTab } from '@/components/spaces/form-tabs/amenities-tab';
@@ -19,10 +19,6 @@ export default function NewSpacePage() {
   const [activeTab, setActiveTab] = useState('basic-info');
   const [spaceType, setSpaceType] = useState<string>('');
 
-  const handleClose = () => {
-    router.push('/spaces');
-  };
-
   const handleSaveDraft = () => {
     console.log('Save as draft');
   };
@@ -33,51 +29,64 @@ export default function NewSpacePage() {
 
   return (
     <AppLayout>
-      <div className="flex min-h-[calc(100vh-180px)] flex-col rounded-lg bg-white">
-        {/* Header */}
-        <div className="flex items-start justify-between border-b p-6">
-          <div>
-            <h1 className="text-2xl font-bold">Add New Coworking Space</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Fill in the details to create a coworking space listing
-            </p>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleClose}
-            className="h-8 w-8"
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
+      <Header
+        title="Add New Coworking Space"
+        description="Fill in the details to create a coworking space listing"
+        breadcrumbs={[
+          { label: 'Dashboard' },
+          { label: 'Coworking Spaces', href: '/spaces' },
+          { label: 'Add New' },
+        ]}
+      />
 
+      <div className="flex min-h-[calc(100vh-240px)] flex-col rounded-lg bg-white">
         {/* Tabs */}
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
           className="flex flex-1 flex-col"
         >
-          <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0 px-6">
-            <TabsTrigger value="basic-info" className="rounded-none">
+          <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0 px-6 h-auto gap-1">
+            <TabsTrigger
+              value="basic-info"
+              className="rounded-none border-b-2 border-transparent pb-3 pt-4 px-4 data-[state=active]:border-gray-900 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-gray-600 data-[state=active]:text-gray-900"
+            >
               Basic Info
             </TabsTrigger>
-            <TabsTrigger value="amenities" className="rounded-none">
+            <TabsTrigger
+              value="amenities"
+              className="rounded-none border-b-2 border-transparent pb-3 pt-4 px-4 data-[state=active]:border-gray-900 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-gray-600 data-[state=active]:text-gray-900"
+            >
               Amenities
             </TabsTrigger>
-            <TabsTrigger value="pricing" className="rounded-none">
+            <TabsTrigger
+              value="pricing"
+              className="rounded-none border-b-2 border-transparent pb-3 pt-4 px-4 data-[state=active]:border-gray-900 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-gray-600 data-[state=active]:text-gray-900"
+            >
               Pricing
             </TabsTrigger>
-            <TabsTrigger value="media" className="rounded-none">
+            <TabsTrigger
+              value="media"
+              className="rounded-none border-b-2 border-transparent pb-3 pt-4 px-4 data-[state=active]:border-gray-900 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-gray-600 data-[state=active]:text-gray-900"
+            >
               Media
             </TabsTrigger>
-            <TabsTrigger value="location" className="rounded-none">
+            <TabsTrigger
+              value="location"
+              className="rounded-none border-b-2 border-transparent pb-3 pt-4 px-4 data-[state=active]:border-gray-900 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-gray-600 data-[state=active]:text-gray-900"
+            >
               Location
             </TabsTrigger>
-            <TabsTrigger value="contact" className="rounded-none">
+            <TabsTrigger
+              value="contact"
+              className="rounded-none border-b-2 border-transparent pb-3 pt-4 px-4 data-[state=active]:border-gray-900 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-gray-600 data-[state=active]:text-gray-900"
+            >
               Contact
             </TabsTrigger>
-            <TabsTrigger value="additional" className="rounded-none">
+            <TabsTrigger
+              value="additional"
+              className="rounded-none border-b-2 border-transparent pb-3 pt-4 px-4 data-[state=active]:border-gray-900 data-[state=active]:bg-transparent data-[state=active]:shadow-none text-gray-600 data-[state=active]:text-gray-900"
+            >
               Additional
             </TabsTrigger>
           </TabsList>
@@ -118,8 +127,8 @@ export default function NewSpacePage() {
         </Tabs>
 
         {/* Fixed Bottom Actions */}
-        <div className="flex items-center justify-between border-t px-6 py-4">
-          <Button variant="ghost" onClick={handleClose}>
+        <div className="flex items-center justify-between border-t bg-white px-6 py-4">
+          <Button variant="ghost" onClick={() => router.push('/spaces')}>
             Cancel
           </Button>
           <div className="flex items-center gap-3">
@@ -127,7 +136,7 @@ export default function NewSpacePage() {
               Save as Draft
             </Button>
             <Button
-              className="bg-accent hover:bg-accent/90"
+              className="bg-green-600 text-white hover:bg-green-700"
               onClick={handlePublish}
             >
               Publish Space
