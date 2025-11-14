@@ -5,9 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Building2,
-  Users,
   UserPlus,
-  Calendar,
   Settings,
   LogOut,
 } from 'lucide-react';
@@ -25,19 +23,9 @@ const navigationItems = [
     icon: Building2,
   },
   {
-    name: 'Users',
-    href: '/users',
-    icon: Users,
-  },
-  {
     name: 'Leads',
     href: '/leads',
     icon: UserPlus,
-  },
-  {
-    name: 'Bookings',
-    href: '/bookings',
-    icon: Calendar,
   },
   {
     name: 'Settings',
