@@ -1,11 +1,10 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Building2, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Building2, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
@@ -32,7 +31,6 @@ export default function LoginPage() {
       const response = await authApi.login(data);
 
       if (response.success) {
-        // Redirect to dashboard on successful login
         router.push('/');
       }
     } catch (error) {
@@ -40,63 +38,85 @@ export default function LoginPage() {
         const errorMessage =
           error.response?.data?.message ||
           error.response?.data?.error ||
-          'Invalid email or password. Please try again.';
+          'Invalid email or password';
         setLoginError(errorMessage);
       } else {
-        setLoginError('An unexpected error occurred. Please try again.');
+        setLoginError('An unexpected error occurred');
       }
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md">
-        {/* Logo/Brand */}
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-lg bg-primary">
-            <Building2 className="h-8 w-8 text-primary-foreground" />
+    <div className="flex min-h-screen">
+      {/* Left Side - Branding */}
+      <div className="hidden w-1/2 bg-emerald-600 lg:flex lg:flex-col lg:justify-between lg:p-12">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
+            <Building2 className="h-6 w-6 text-white" />
           </div>
-          <h1 className="text-2xl font-semibold text-gray-900">
-            CoWork Kerala
-          </h1>
-          <p className="mt-1 text-sm text-gray-600">Admin Panel</p>
+          <span className="text-xl font-bold text-white">CoWork</span>
         </div>
 
-        {/* Login Form */}
-        <div className="rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
-          <h2 className="mb-6 text-xl font-semibold text-gray-900">
-            Sign in to your account
-          </h2>
+        <div>
+          <h1 className="text-4xl font-bold leading-tight text-white">
+            Manage your
+            <br />
+            coworking spaces
+            <br />
+            with ease
+          </h1>
+          <p className="mt-4 text-lg text-emerald-100">
+            The complete admin solution for coworking space management in Kerala
+          </p>
+        </div>
+
+        <p className="text-sm text-emerald-200">
+          © 2025 CoWork Kerala. All rights reserved.
+        </p>
+      </div>
+
+      {/* Right Side - Login Form */}
+      <div className="flex w-full items-center justify-center bg-white px-6 lg:w-1/2">
+        <div className="w-full max-w-md">
+          {/* Mobile Logo */}
+          <div className="mb-8 flex items-center gap-3 lg:hidden">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600">
+              <Building2 className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-xl font-bold text-neutral-900">CoWork</span>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-neutral-900">
+              Welcome back
+            </h2>
+            <p className="mt-2 text-neutral-500">
+              Sign in to access the admin dashboard
+            </p>
+          </div>
 
           {/* Error Message */}
           {loginError && (
-            <div className="mb-4 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-3">
-              <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
-              <p className="text-sm text-red-600">{loginError}</p>
+            <div className="mt-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
+              {loginError}
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {loginError && (
-              <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
-                {loginError}
-              </div>
-            )}
-
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
             {/* Email Field */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <label
                 htmlFor="email"
-                className="block text-sm font-normal text-gray-700"
+                className="text-sm font-medium text-neutral-700"
               >
-                Email Address
+                Email
               </label>
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@coworkkerala.com"
+                placeholder="you@example.com"
                 {...register('email')}
-                className={errors.email ? 'border-red-500' : ''}
+                className={`h-11 border-neutral-200 ${errors.email ? 'border-red-500' : ''}`}
               />
               {errors.email && (
                 <p className="text-sm text-red-600">{errors.email.message}</p>
@@ -104,10 +124,10 @@ export default function LoginPage() {
             </div>
 
             {/* Password Field */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <label
                 htmlFor="password"
-                className="block text-sm font-normal text-gray-700"
+                className="text-sm font-medium text-neutral-700"
               >
                 Password
               </label>
@@ -115,14 +135,14 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
+                  placeholder="••••••••"
                   {...register('password')}
-                  className={errors.password ? 'border-red-500' : ''}
+                  className={`h-11 border-neutral-200 pr-10 ${errors.password ? 'border-red-500' : ''}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -141,28 +161,30 @@ export default function LoginPage() {
             {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full bg-primary hover:bg-primary/90"
+              className="h-11 w-full"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Signing in...' : 'Sign In'}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                'Sign In'
+              )}
             </Button>
           </form>
 
-          {/* Additional Links */}
-          <div className="mt-6 text-center">
+          {/* Footer Link */}
+          <p className="mt-8 text-center text-sm text-neutral-500">
             <a
               href="#"
-              className="text-sm text-primary hover:text-primary/90 hover:underline"
+              className="text-emerald-600 hover:text-emerald-700 hover:underline"
             >
               Forgot your password?
             </a>
-          </div>
+          </p>
         </div>
-
-        {/* Footer */}
-        <p className="mt-8 text-center text-sm text-gray-500">
-          &copy; 2025 CoWork Kerala. All rights reserved.
-        </p>
       </div>
     </div>
   );
