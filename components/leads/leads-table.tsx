@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import { Eye, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { LeadDetailModal } from './lead-detail-modal';
 import type { Lead } from '@/lib/data/leads';
 
@@ -23,20 +23,20 @@ const statusConfig: Record<
   Lead['status'],
   { label: string; className: string }
 > = {
-  new: { label: 'New', className: 'bg-blue-100 text-blue-700' },
+  new: { label: 'New', className: 'bg-sky-50 text-sky-700 border-0' },
   contacted: {
     label: 'Contacted',
-    className: 'bg-purple-100 text-purple-700',
+    className: 'bg-violet-50 text-violet-700 border-0',
   },
   qualified: {
     label: 'Qualified',
-    className: 'bg-green-100 text-green-700',
+    className: 'bg-emerald-50 text-emerald-700 border-0',
   },
   converted: {
     label: 'Converted',
-    className: 'bg-teal-100 text-teal-700',
+    className: 'bg-amber-50 text-amber-700 border-0',
   },
-  lost: { label: 'Lost', className: 'bg-red-100 text-red-700' },
+  lost: { label: 'Lost', className: 'bg-red-50 text-red-700 border-0' },
 };
 
 export function LeadsTable({
@@ -70,7 +70,7 @@ export function LeadsTable({
   };
 
   const formatDate = (dateStr?: string) => {
-    if (!dateStr) return '-';
+    if (!dateStr) return '—';
     try {
       return new Date(dateStr).toLocaleDateString('en-IN', {
         year: 'numeric',
@@ -82,158 +82,99 @@ export function LeadsTable({
     }
   };
 
-  if (leads.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-2 p-8 text-gray-500 bg-white rounded-lg border">
-        <p>No leads found.</p>
-      </div>
-    );
-  }
-
   return (
     <>
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[800px]">
-            <thead className="border-b border-gray-200 bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left">
-                  <Checkbox />
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                  Name
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                  Phone
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                  Email
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                  Enquired For
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                  Date
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {leads.map(lead => (
-                <tr
-                  key={lead._id || lead.id}
-                  className="transition-colors hover:bg-gray-50"
-                >
-                  <td className="px-4 py-4">
-                    <Checkbox />
-                  </td>
-                  <td className="px-4 py-4 text-sm font-medium text-gray-900">
+      <div className="overflow-x-auto bg-white">
+        <table className="w-full min-w-[800px]">
+          <thead>
+            <tr className="border-b bg-neutral-50 text-left text-xs font-medium uppercase tracking-wider text-neutral-500">
+              <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Contact</th>
+              <th className="px-4 py-3">Enquiry</th>
+              <th className="px-4 py-3">Date</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-neutral-100">
+            {leads.map(lead => (
+              <tr
+                key={lead._id || lead.id}
+                className="transition-colors hover:bg-neutral-50/50"
+              >
+                <td className="px-4 py-3">
+                  <span className="font-medium text-neutral-900">
                     {lead.name}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-700">
-                    {lead.phone}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-700">
-                    {lead.email}
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-900">
-                        {lead.enquiredFor}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {lead.spaceType}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-700">
-                    {formatDate(lead.date || lead.createdAt)}
-                  </td>
-                  <td className="px-4 py-4">
-                    <Select
-                      value={lead.status}
-                      onValueChange={value => handleStatusChange(lead, value)}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="space-y-0.5">
+                    <p className="text-sm text-neutral-600">{lead.phone}</p>
+                    <p className="text-xs text-neutral-400">{lead.email}</p>
+                  </div>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="space-y-0.5">
+                    <p className="text-sm font-medium text-neutral-900">
+                      {lead.enquiredFor}
+                    </p>
+                    <p className="text-xs text-neutral-500">{lead.spaceType}</p>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-sm text-neutral-600">
+                  {formatDate(lead.date || lead.createdAt)}
+                </td>
+                <td className="px-4 py-3">
+                  <Select
+                    value={lead.status}
+                    onValueChange={value => handleStatusChange(lead, value)}
+                  >
+                    <SelectTrigger className="h-auto w-auto border-0 bg-transparent p-0 shadow-none focus:ring-0">
+                      <Badge
+                        variant="secondary"
+                        className={statusConfig[lead.status].className}
+                      >
+                        {statusConfig[lead.status].label}
+                      </Badge>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(statusConfig).map(([value, config]) => (
+                        <SelectItem key={value} value={value}>
+                          <Badge
+                            variant="secondary"
+                            className={config.className}
+                          >
+                            {config.label}
+                          </Badge>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-neutral-500 hover:text-neutral-900"
+                      onClick={() => handleViewLead(lead)}
                     >
-                      <SelectTrigger className="h-auto w-auto border-0 bg-transparent p-0 focus:ring-0">
-                        <Badge
-                          variant="secondary"
-                          className={statusConfig[lead.status].className}
-                        >
-                          {statusConfig[lead.status].label}
-                        </Badge>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="new">
-                          <Badge
-                            variant="secondary"
-                            className="bg-blue-100 text-blue-700"
-                          >
-                            New
-                          </Badge>
-                        </SelectItem>
-                        <SelectItem value="contacted">
-                          <Badge
-                            variant="secondary"
-                            className="bg-purple-100 text-purple-700"
-                          >
-                            Contacted
-                          </Badge>
-                        </SelectItem>
-                        <SelectItem value="qualified">
-                          <Badge
-                            variant="secondary"
-                            className="bg-green-100 text-green-700"
-                          >
-                            Qualified
-                          </Badge>
-                        </SelectItem>
-                        <SelectItem value="converted">
-                          <Badge
-                            variant="secondary"
-                            className="bg-teal-100 text-teal-700"
-                          >
-                            Converted
-                          </Badge>
-                        </SelectItem>
-                        <SelectItem value="lost">
-                          <Badge
-                            variant="secondary"
-                            className="bg-red-100 text-red-700"
-                          >
-                            Lost
-                          </Badge>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleViewLead(lead)}
-                        className="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                        title="View details"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteLead(lead)}
-                        className="rounded p-1 text-red-500 hover:bg-red-50 hover:text-red-700"
-                        title="Delete lead"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-neutral-500 hover:bg-red-50 hover:text-red-600"
+                      onClick={() => handleDeleteLead(lead)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <LeadDetailModal

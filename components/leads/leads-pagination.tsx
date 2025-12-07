@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface LeadsPaginationProps {
   currentPage: number;
@@ -33,31 +34,34 @@ export function LeadsPagination({
   }
 
   return (
-    <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-200 bg-white px-6 py-4 md:flex-row rounded-b-lg">
-      <p className="text-sm text-gray-600">
-        Showing {startEntry} to {endEntry} of {totalEntries} entries
+    <div className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-white px-4 py-3">
+      <p className="text-sm text-neutral-500">
+        <span className="font-medium text-neutral-900">{startEntry}</span>
+        {' – '}
+        <span className="font-medium text-neutral-900">{endEntry}</span>
+        {' of '}
+        <span className="font-medium text-neutral-900">{totalEntries}</span>
       </p>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
         <Button
-          variant="outline"
+          variant="ghost"
+          size="sm"
           disabled={currentPage === 1}
           onClick={() => handlePageChange(currentPage - 1)}
+          className="h-8 px-2"
         >
-          Previous
+          <ChevronLeft className="h-4 w-4" />
+          <span className="ml-1">Prev</span>
         </Button>
 
-        {/* Page numbers */}
         {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
           const page = i + 1;
           return (
             <Button
               key={page}
-              variant={currentPage === page ? 'default' : 'outline'}
-              className={
-                currentPage === page
-                  ? 'bg-green-600 hover:bg-green-700'
-                  : 'bg-white'
-              }
+              variant={currentPage === page ? 'default' : 'ghost'}
+              size="sm"
+              className="h-8 w-8 p-0"
               onClick={() => handlePageChange(page)}
             >
               {page}
@@ -66,11 +70,14 @@ export function LeadsPagination({
         })}
 
         <Button
-          variant="outline"
+          variant="ghost"
+          size="sm"
           disabled={currentPage === totalPages}
           onClick={() => handlePageChange(currentPage + 1)}
+          className="h-8 px-2"
         >
-          Next
+          <span className="mr-1">Next</span>
+          <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
     </div>

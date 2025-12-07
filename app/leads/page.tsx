@@ -1,11 +1,10 @@
 'use client';
 
 import { useEffect, useState, useCallback, Suspense } from 'react';
-import { Download, Loader2 } from 'lucide-react';
+import { Download, Loader2, Users } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Header } from '@/components/layout/header';
-import { Card } from '@/components/ui/card';
 import { LeadsFilters } from '@/components/leads/leads-filters';
 import { LeadsTable } from '@/components/leads/leads-table';
 import { LeadsPagination } from '@/components/leads/leads-pagination';
@@ -70,7 +69,6 @@ function LeadsPageContent() {
 
   const fetchStats = useCallback(async () => {
     try {
-      // Fetch all leads to compute stats (or you could have a /leads/stats endpoint)
       const { data } = await api.get('/leads?limit=1000');
       if (data.success) {
         const fetchedLeads = data.data as Lead[];
@@ -97,7 +95,6 @@ function LeadsPageContent() {
   const handleStatusChange = async (leadId: string, newStatus: string) => {
     try {
       await api.patch(`/leads/${leadId}`, { status: newStatus });
-      // Refetch leads after status change
       fetchLeads();
       fetchStats();
     } catch (error) {
@@ -121,7 +118,6 @@ function LeadsPageContent() {
       return;
     }
 
-    // Define CSV headers
     const headers = [
       'Lead ID',
       'Name',
@@ -136,7 +132,6 @@ function LeadsPageContent() {
       'Date',
     ];
 
-    // Convert leads to CSV rows
     const rows = allLeads.map(lead => [
       lead.leadId || lead.id,
       lead.name,
@@ -147,17 +142,15 @@ function LeadsPageContent() {
       lead.numberOfSeats || '',
       lead.location || '',
       lead.status,
-      (lead.message || '').replace(/"/g, '""'), // Escape quotes
+      (lead.message || '').replace(/"/g, '""'),
       lead.date || lead.createdAt || '',
     ]);
 
-    // Build CSV content
     const csvContent = [
       headers.join(','),
       ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
     ].join('\n');
 
-    // Create and download file
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
@@ -172,80 +165,100 @@ function LeadsPageContent() {
     document.body.removeChild(link);
   };
 
-  const statCards = [
-    {
-      label: 'Total Enquiries',
-      value: String(stats.total),
-      className: 'bg-white',
-    },
-    {
-      label: 'Qualified',
-      value: String(stats.qualified),
-      className: 'bg-white',
-    },
-    { label: 'New', value: String(stats.new), className: 'bg-white' },
-    {
-      label: 'Converted',
-      value: String(stats.converted),
-      className: 'bg-white',
-    },
-  ];
-
   return (
     <AppLayout>
       <Header
-        title="Lead Management"
-        description="View and manage all leads across your spaces"
-        breadcrumbs={[{ label: 'Dashboard' }, { label: 'Leads' }]}
+        title="Leads"
+        description="Track and manage enquiries from potential customers"
+        breadcrumbs={[{ label: 'Dashboard', href: '/' }, { label: 'Leads' }]}
         action={{
-          label: 'Export Report',
+          label: 'Export',
           icon: Download,
           onClick: exportToCSV,
-          className: 'bg-green-500 text-white hover:bg-green-600',
         }}
       />
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {statCards.map(stat => (
-          <Card key={stat.label} className={`p-6 ${stat.className}`}>
-            <p className="text-sm text-gray-600">{stat.label}</p>
-            <p className="mt-2 text-3xl font-semibold text-gray-900">
-              {isLoading ? '-' : stat.value}
-            </p>
-          </Card>
-        ))}
+      {/* Stats Grid */}
+      <div className="grid gap-px overflow-hidden rounded-2xl border bg-neutral-200 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="bg-white p-5">
+          <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+            Total
+          </span>
+          <p className="mt-1 text-3xl font-semibold tabular-nums">
+            {isLoading ? '—' : stats.total}
+          </p>
+        </div>
+        <div className="bg-white p-5">
+          <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+            New
+          </span>
+          <p className="mt-1 text-3xl font-semibold tabular-nums text-sky-600">
+            {isLoading ? '—' : stats.new}
+          </p>
+        </div>
+        <div className="bg-white p-5">
+          <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+            Qualified
+          </span>
+          <p className="mt-1 text-3xl font-semibold tabular-nums text-emerald-600">
+            {isLoading ? '—' : stats.qualified}
+          </p>
+        </div>
+        <div className="bg-white p-5">
+          <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+            Converted
+          </span>
+          <p className="mt-1 text-3xl font-semibold tabular-nums text-amber-600">
+            {isLoading ? '—' : stats.converted}
+          </p>
+        </div>
       </div>
 
       {/* Filters */}
-      <div className="rounded-lg bg-white p-6">
+      <div className="mt-6">
         <LeadsFilters />
       </div>
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex justify-center p-8">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <div className="mt-6 flex h-64 items-center justify-center rounded-2xl border border-neutral-200 bg-white">
+          <Loader2 className="h-6 w-6 animate-spin text-neutral-400" />
+        </div>
+      ) : leads.length === 0 ? (
+        <div className="mt-6 flex h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50">
+          <Users className="h-10 w-10 text-neutral-300" />
+          <p className="mt-3 text-sm font-medium text-neutral-600">
+            No leads found
+          </p>
+          <p className="mt-1 text-sm text-neutral-400">
+            Leads will appear here when customers enquire
+          </p>
         </div>
       ) : (
-        <LeadsTable
-          leads={leads}
-          onStatusChange={handleStatusChange}
-          onDelete={handleDelete}
-        />
+        <div className="mt-6 overflow-hidden rounded-2xl border border-neutral-200">
+          <LeadsTable
+            leads={leads}
+            onStatusChange={handleStatusChange}
+            onDelete={handleDelete}
+          />
+        </div>
       )}
 
       {/* Pagination */}
-      <LeadsPagination
-        currentPage={pagination.page}
-        totalPages={pagination.totalPages}
-        totalEntries={pagination.total}
-        startEntry={(pagination.page - 1) * pagination.limit + 1}
-        endEntry={Math.min(
-          pagination.page * pagination.limit,
-          pagination.total
-        )}
-      />
+      {pagination.totalPages > 1 && (
+        <div className="mt-6">
+          <LeadsPagination
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            totalEntries={pagination.total}
+            startEntry={(pagination.page - 1) * pagination.limit + 1}
+            endEntry={Math.min(
+              pagination.page * pagination.limit,
+              pagination.total
+            )}
+          />
+        </div>
+      )}
     </AppLayout>
   );
 }
@@ -255,8 +268,8 @@ export default function LeadsPage() {
     <Suspense
       fallback={
         <AppLayout>
-          <div className="flex h-[80vh] items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <div className="flex h-[60vh] items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-neutral-400" />
           </div>
         </AppLayout>
       }

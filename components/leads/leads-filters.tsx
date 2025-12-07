@@ -3,6 +3,7 @@
 import { Search } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -40,38 +41,36 @@ export function LeadsFilters() {
   };
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       {/* Search */}
-      <div className="relative flex-1 md:max-w-md">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-        <input
+      <div className="relative max-w-sm flex-1">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
+        <Input
           type="text"
-          placeholder="Search by name, email, or phone..."
-          className="h-10 w-full rounded-md border border-gray-200 bg-white pl-10 pr-4 text-sm placeholder:text-gray-400 focus:border-gray-300 focus:outline-none"
+          placeholder="Search leads..."
+          className="h-10 border-neutral-200 pl-9"
           defaultValue={searchParams.get('search')?.toString()}
           onChange={e => handleSearch(e.target.value)}
         />
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-3">
-        <Select
-          defaultValue={searchParams.get('status') || 'all'}
-          onValueChange={value => handleFilter('status', value)}
-        >
-          <SelectTrigger className="w-[140px]">
-            <SelectValue placeholder="All Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            {statusOptions.map(option => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Status Filter */}
+      <Select
+        defaultValue={searchParams.get('status') || 'all'}
+        onValueChange={value => handleFilter('status', value)}
+      >
+        <SelectTrigger className="h-10 w-[130px] border-neutral-200">
+          <SelectValue placeholder="Status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Status</SelectItem>
+          {statusOptions.map(option => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
