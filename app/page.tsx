@@ -235,9 +235,9 @@ export default function DashboardPage() {
 
         {/* Charts Row */}
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Spaces by Type - Bar Chart */}
+          {/* Spaces by Type - Simple Count Grid */}
           <Card>
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-4">
               <CardTitle className="text-base font-semibold">
                 Spaces by Type
               </CardTitle>
@@ -245,40 +245,23 @@ export default function DashboardPage() {
             <CardContent>
               {stats?.charts.spacesByType &&
               stats.charts.spacesByType.length > 0 ? (
-                <div className="h-[200px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={stats.charts.spacesByType}
-                      layout="vertical"
-                      margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
+                <div className="grid grid-cols-2 gap-4">
+                  {stats.charts.spacesByType.map((item, index) => (
+                    <div
+                      key={index}
+                      className="rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50"
                     >
-                      <XAxis type="number" hide />
-                      <YAxis
-                        type="category"
-                        dataKey="name"
-                        axisLine={false}
-                        tickLine={false}
-                        width={100}
-                        tick={{ fontSize: 12, fill: '#6b7280' }}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          borderRadius: '8px',
-                          border: '1px solid #e5e7eb',
-                          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                        }}
-                      />
-                      <Bar
-                        dataKey="value"
-                        fill="#3b82f6"
-                        radius={[0, 4, 4, 0]}
-                        barSize={20}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
+                      <p className="text-2xl font-bold text-foreground">
+                        {item.value}
+                      </p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {item.name}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               ) : (
-                <div className="flex h-[200px] items-center justify-center text-sm text-muted-foreground">
+                <div className="flex h-[150px] items-center justify-center text-sm text-muted-foreground">
                   No spaces data available
                 </div>
               )}
