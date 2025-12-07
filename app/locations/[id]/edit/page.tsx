@@ -37,8 +37,8 @@ export default function EditLocationPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="flex h-screen items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="flex h-[60vh] items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-neutral-400" />
         </div>
       </AppLayout>
     );
@@ -48,15 +48,20 @@ export default function EditLocationPage() {
     <AppLayout>
       <Header
         title="Edit Location"
-        description="Update location details"
+        description={
+          data?.name ? `Editing ${data.name}` : 'Update location details'
+        }
         breadcrumbs={[
+          { label: 'Dashboard', href: '/' },
           { label: 'Locations', href: '/locations' },
           { label: 'Edit' },
         ]}
       />
 
-      <div className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        {data && <LocationForm initialData={data} isEditing />}
+      <div className="max-w-2xl">
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6">
+          {data && <LocationForm initialData={data} isEditing />}
+        </div>
       </div>
     </AppLayout>
   );

@@ -11,13 +11,16 @@ export default function CreateLocationPage() {
         title="Create Location"
         description="Add a new city or area"
         breadcrumbs={[
+          { label: 'Dashboard', href: '/' },
           { label: 'Locations', href: '/locations' },
           { label: 'Create' },
         ]}
       />
 
-      <div className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <LocationForm />
+      <div className="max-w-2xl">
+        <div className="rounded-2xl border border-neutral-200 bg-white p-6">
+          <LocationForm />
+        </div>
       </div>
     </AppLayout>
   );

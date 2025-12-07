@@ -9,13 +9,12 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import {
   locationSchema,
   type LocationFormData,
 } from '@/lib/validations/location';
 import { api } from '@/lib/api';
-
 import { ImageUpload } from '@/components/ui/image-upload';
 
 interface LocationFormProps {
@@ -55,7 +54,7 @@ export function LocationForm({
         await api.post('/locations', data);
       }
       router.push('/locations');
-      router.refresh(); // Refresh list
+      router.refresh();
     } catch (err) {
       const errorMessage = axios.isAxiosError(err)
         ? err.response?.data?.message || err.message
@@ -67,13 +66,16 @@ export function LocationForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {error && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
           {error}
         </div>
       )}
 
-      <div className="space-y-4">
-        <label className="text-sm font-medium">Cover Image</label>
+      {/* Cover Image */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-neutral-700">
+          Cover Image
+        </label>
         <ImageUpload
           value={watch('image')}
           onChange={url => setValue('image', url)}
@@ -85,40 +87,52 @@ export function LocationForm({
         )}
       </div>
 
+      {/* Location Name */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">Location Name</label>
-        <Input {...register('name')} placeholder="e.g. MG Road, Kochi" />
+        <label className="text-sm font-medium text-neutral-700">
+          Location Name
+        </label>
+        <Input
+          {...register('name')}
+          placeholder="e.g. Kochi, Trivandrum, Kozhikode"
+          className="h-11"
+        />
         {errors.name && (
           <p className="text-sm text-red-500">{errors.name.message}</p>
         )}
       </div>
 
+      {/* Description */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">Description</label>
+        <label className="text-sm font-medium text-neutral-700">
+          Description
+        </label>
         <Textarea
           {...register('description')}
-          placeholder="Brief description about the location"
+          placeholder="Brief description about this location"
+          className="min-h-[100px] resize-none"
         />
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
         )}
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id="isActive"
+      {/* Active Status */}
+      <div className="flex items-center justify-between rounded-lg border border-neutral-200 p-4">
+        <div>
+          <p className="text-sm font-medium text-neutral-900">Active Status</p>
+          <p className="text-sm text-neutral-500">
+            Make this location visible on the website
+          </p>
+        </div>
+        <Switch
           checked={watch('isActive')}
-          onCheckedChange={checked => setValue('isActive', checked as boolean)}
+          onCheckedChange={checked => setValue('isActive', checked)}
         />
-        <label
-          htmlFor="isActive"
-          className="text-sm font-medium cursor-pointer"
-        >
-          Active Status
-        </label>
       </div>
 
-      <div className="flex justify-end gap-3">
+      {/* Actions */}
+      <div className="flex justify-end gap-3 pt-4">
         <Button
           type="button"
           variant="outline"

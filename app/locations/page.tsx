@@ -2,16 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Plus, MapPin, Loader2 } from 'lucide-react';
+import { Plus, MapPin, Loader2, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { api } from '@/lib/api';
 import { AppLayout } from '@/components/layout/app-layout';
@@ -61,109 +53,116 @@ export default function LocationsPage() {
     <AppLayout>
       <Header
         title="Locations"
-        description="Manage coworking locations"
-        breadcrumbs={[{ label: 'Locations' }]}
+        description="Manage coworking locations across Kerala"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/' },
+          { label: 'Locations' },
+        ]}
       >
         <Link href="/locations/create">
-          <Button className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
             Add Location
           </Button>
         </Link>
       </Header>
 
-      <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Location</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={3} className="h-24 text-center">
-                  <div className="flex justify-center">
-                    <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+      {isLoading ? (
+        <div className="flex h-64 items-center justify-center">
+          <Loader2 className="h-6 w-6 animate-spin text-neutral-400" />
+        </div>
+      ) : locations.length === 0 ? (
+        <div className="flex h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-200 bg-neutral-50">
+          <MapPin className="h-10 w-10 text-neutral-300" />
+          <p className="mt-3 text-sm font-medium text-neutral-600">
+            No locations yet
+          </p>
+          <p className="mt-1 text-sm text-neutral-400">
+            Create your first location to get started
+          </p>
+          <Link href="/locations/create" className="mt-4">
+            <Button variant="outline" size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Location
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {locations.map(location => (
+            <div
+              key={location._id}
+              className="group overflow-hidden rounded-2xl border border-neutral-200 bg-white transition-shadow hover:shadow-md"
+            >
+              {/* Image */}
+              <div className="relative h-66 bg-neutral-100">
+                {location.image ? (
+                  <Image
+                    src={location.image}
+                    alt={location.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center">
+                    <MapPin className="h-10 w-10 text-neutral-300" />
                   </div>
-                </TableCell>
-              </TableRow>
-            ) : locations.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={3} className="h-24 text-center">
-                  <div className="flex flex-col items-center justify-center gap-2 text-gray-500">
-                    <MapPin className="h-8 w-8 text-gray-300" />
-                    <p>No locations found. Create one to get started.</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              locations.map(location => (
-                <TableRow key={location._id}>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-3">
-                      {location.image ? (
-                        <div className="relative h-10 w-10 overflow-hidden rounded-md">
-                          <Image
-                            src={location.image}
-                            alt={location.name}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-gray-100">
-                          <MapPin className="h-5 w-5 text-gray-400" />
-                        </div>
-                      )}
-                      <div>
-                        <div className="font-medium text-gray-900">
-                          {location.name}
-                        </div>
-                        {location.description && (
-                          <div className="text-xs text-gray-500 max-w-[200px] truncate">
-                            {location.description}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={location.isActive ? 'default' : 'secondary'}
-                      className={
-                        location.isActive
-                          ? 'bg-green-100 text-green-700 hover:bg-green-100'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-100'
-                      }
+                )}
+                {/* Status Badge */}
+                <div className="absolute right-3 top-3">
+                  <Badge
+                    variant="secondary"
+                    className={
+                      location.isActive
+                        ? 'bg-emerald-100 text-emerald-700 border-0'
+                        : 'bg-neutral-100 text-neutral-600 border-0'
+                    }
+                  >
+                    {location.isActive ? 'Active' : 'Inactive'}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-4">
+                <h3 className="font-semibold text-neutral-900">
+                  {location.name}
+                </h3>
+                {location.description && (
+                  <p className="mt-1 line-clamp-2 text-sm text-neutral-500">
+                    {location.description}
+                  </p>
+                )}
+
+                {/* Actions */}
+                <div className="mt-4 flex gap-2">
+                  <Link
+                    href={`/locations/${location._id}/edit`}
+                    className="flex-1"
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-neutral-600 hover:text-neutral-900"
                     >
-                      {location.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Link href={`/locations/${location._id}/edit`}>
-                        <Button variant="outline" size="sm">
-                          Edit
-                        </Button>
-                      </Link>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(location._id)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                      <Pencil className="mr-2 h-3.5 w-3.5" />
+                      Edit
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200"
+                    onClick={() => handleDelete(location._id)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </AppLayout>
   );
 }
