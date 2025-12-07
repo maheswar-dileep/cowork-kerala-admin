@@ -1,23 +1,21 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
-
+import { ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 interface HeaderProps {
   title: string;
   description?: string;
   breadcrumbs?: { label: string; href?: string }[];
-  action?: {
-    label: string;
-    onClick?: () => void;
-  };
+  children?: React.ReactNode;
 }
 
 export function Header({
   title,
   description,
   breadcrumbs,
-  action,
+  children,
 }: HeaderProps) {
   return (
     <div className="mb-6">
@@ -41,26 +39,7 @@ export function Header({
           )}
         </div>
 
-        {action && (
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-muted-foreground"
-            >
-              Last 30 days
-            </Button>
-            <Button
-              size="sm"
-              className="bg-accent hover:bg-accent/90"
-              onClick={action.onClick}
-            >
-              <Download className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">{action.label}</span>
-              <span className="sm:hidden">Export</span>
-            </Button>
-          </div>
-        )}
+        {children && <div className="flex items-center gap-3">{children}</div>}
       </div>
     </div>
   );

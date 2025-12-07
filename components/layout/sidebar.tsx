@@ -8,6 +8,7 @@ import {
   UserPlus,
   Settings,
   LogOut,
+  MapPin, // Import MapPin
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -16,6 +17,11 @@ const navigationItems = [
     name: 'Dashboard',
     href: '/',
     icon: LayoutDashboard,
+  },
+  {
+    name: 'Locations', // Add Locations
+    href: '/locations',
+    icon: MapPin,
   },
   {
     name: 'Coworking Spaces',
