@@ -175,174 +175,124 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Middle Section */}
-        <div className="grid gap-8 lg:grid-cols-5">
+        {/* Secondary Stats Grid - Same style as hero */}
+        <div className="grid gap-px overflow-hidden rounded-2xl border bg-neutral-200 sm:grid-cols-2 lg:grid-cols-3">
           {/* Space Types */}
-          <div className="lg:col-span-2">
-            <h2 className="text-sm font-medium text-neutral-900">
+          <div className="bg-white p-6">
+            <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">
               Space Types
-            </h2>
-            <div className="mt-4 space-y-3">
+            </span>
+            <div className="mt-4 space-y-2">
               {stats?.charts.spacesByType &&
               stats.charts.spacesByType.length > 0 ? (
-                stats.charts.spacesByType.map((item, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between border-b border-neutral-100 pb-3 last:border-0"
-                  >
-                    <span className="text-neutral-700">{item.name}</span>
-                    <span className="text-lg font-medium tabular-nums">
+                stats.charts.spacesByType.slice(0, 4).map((item, i) => (
+                  <div key={i} className="flex items-baseline justify-between">
+                    <span className="text-sm text-neutral-600">
+                      {item.name}
+                    </span>
+                    <span className="text-lg font-light tabular-nums">
                       {item.value}
                     </span>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-neutral-500">No spaces yet</p>
+                <p className="text-sm text-neutral-500">No data</p>
               )}
             </div>
           </div>
 
           {/* Lead Pipeline */}
-          <div className="lg:col-span-3">
-            <h2 className="text-sm font-medium text-neutral-900">
+          <div className="bg-white p-6">
+            <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">
               Lead Pipeline
-            </h2>
-            {leadStatusData.length > 0 ? (
-              <div className="mt-4 flex items-center gap-6">
-                <div className="h-40 w-40 shrink-0">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={leadStatusData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={35}
-                        outerRadius={60}
-                        paddingAngle={2}
-                        dataKey="value"
-                        strokeWidth={0}
-                      >
-                        {leadStatusData.map((entry, index) => (
-                          <Cell key={index} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        contentStyle={{
-                          fontSize: '12px',
-                          borderRadius: '6px',
-                          border: '1px solid #e5e5e5',
-                        }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex-1 space-y-2">
-                  {leadStatusData.map((item, i) => (
-                    <div key={i} className="flex items-center gap-3 text-sm">
+            </span>
+            <div className="mt-4 space-y-2">
+              {leadStatusData.length > 0 ? (
+                leadStatusData.map((item, i) => (
+                  <div key={i} className="flex items-baseline justify-between">
+                    <div className="flex items-center gap-2">
                       <span
-                        className="h-2.5 w-2.5 rounded-sm"
+                        className="h-2 w-2 rounded-full"
                         style={{ backgroundColor: item.fill }}
                       />
-                      <span className="flex-1 text-neutral-600">
+                      <span className="text-sm text-neutral-600">
                         {item.name}
                       </span>
-                      <span className="font-medium tabular-nums">
-                        {item.value}
-                      </span>
                     </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <p className="mt-4 text-sm text-neutral-500">No leads yet</p>
-            )}
+                    <span className="text-lg font-light tabular-nums">
+                      {item.value}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-neutral-500">No data</p>
+              )}
+            </div>
+          </div>
+
+          {/* Locations */}
+          <div className="bg-white p-6 sm:col-span-2 lg:col-span-1">
+            <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+              By Location
+            </span>
+            <div className="mt-4 space-y-2">
+              {stats?.charts.spacesByCity &&
+              stats.charts.spacesByCity.length > 0 ? (
+                stats.charts.spacesByCity.slice(0, 4).map((item, i) => (
+                  <div key={i} className="flex items-baseline justify-between">
+                    <span className="text-sm text-neutral-600">
+                      {item.name}
+                    </span>
+                    <span className="text-lg font-light tabular-nums">
+                      {item.value}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-neutral-500">No data</p>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Location Distribution */}
-        {stats?.charts.spacesByCity && stats.charts.spacesByCity.length > 0 && (
-          <div>
-            <h2 className="text-sm font-medium text-neutral-900">
-              Spaces by Location
-            </h2>
-            <div className="mt-4 h-36">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={stats.charts.spacesByCity}
-                  margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
-                >
-                  <XAxis
-                    dataKey="name"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 11, fill: '#737373' }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      fontSize: '12px',
-                      borderRadius: '6px',
-                      border: '1px solid #e5e5e5',
-                    }}
-                  />
-                  <Bar
-                    dataKey="value"
-                    fill="#18181b"
-                    radius={[3, 3, 0, 0]}
-                    barSize={32}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+        {/* Recent Enquiries - Clean table */}
+        <div className="overflow-hidden rounded-2xl border bg-neutral-200">
+          <div className="bg-white">
+            <div className="border-b px-6 py-4">
+              <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+                Recent Enquiries
+              </span>
             </div>
+            {stats?.recentLeads && stats.recentLeads.length > 0 ? (
+              <div className="divide-y">
+                {stats.recentLeads.map(lead => (
+                  <div
+                    key={lead.id}
+                    className="flex items-center justify-between px-6 py-4"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-neutral-900">
+                        {lead.name}
+                      </p>
+                      <p className="mt-0.5 text-sm text-neutral-500">
+                        {lead.enquiredFor} · {lead.spaceType}
+                      </p>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className={`ml-4 shrink-0 font-normal ${statusBadge[lead.status] || ''}`}
+                    >
+                      {lead.status}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="px-6 py-8 text-center text-sm text-neutral-500">
+                No enquiries yet
+              </div>
+            )}
           </div>
-        )}
-
-        {/* Recent Activity */}
-        <div>
-          <h2 className="text-sm font-medium text-neutral-900">
-            Recent Enquiries
-          </h2>
-          {stats?.recentLeads && stats.recentLeads.length > 0 ? (
-            <div className="mt-4 overflow-hidden rounded-xl border">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b bg-neutral-50 text-left text-xs font-medium uppercase tracking-wider text-neutral-500">
-                    <th className="px-4 py-3">Lead</th>
-                    <th className="px-4 py-3">Space</th>
-                    <th className="px-4 py-3">Type</th>
-                    <th className="px-4 py-3 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {stats.recentLeads.map(lead => (
-                    <tr key={lead.id} className="hover:bg-neutral-50/50">
-                      <td className="px-4 py-3">
-                        <p className="font-medium text-neutral-900">
-                          {lead.name}
-                        </p>
-                        <p className="text-xs text-neutral-500">{lead.email}</p>
-                      </td>
-                      <td className="px-4 py-3 text-neutral-600">
-                        {lead.enquiredFor}
-                      </td>
-                      <td className="px-4 py-3 text-neutral-600">
-                        {lead.spaceType}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <Badge
-                          variant="outline"
-                          className={`font-normal ${statusBadge[lead.status] || ''}`}
-                        >
-                          {lead.status}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="mt-4 text-sm text-neutral-500">No enquiries yet</p>
-          )}
         </div>
       </div>
     </AppLayout>
