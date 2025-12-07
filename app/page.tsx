@@ -179,7 +179,7 @@ export default function DashboardPage() {
         <div className="grid gap-px overflow-hidden rounded-2xl border bg-neutral-200 sm:grid-cols-2 lg:grid-cols-3">
           {/* Space Types */}
           <div className="bg-white p-6">
-            <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+            <span className="text-sm font-semibold uppercase tracking-wider text-neutral-700">
               Space Types
             </span>
             <div className="mt-4 space-y-2">
@@ -190,9 +190,7 @@ export default function DashboardPage() {
                     <span className="text-sm text-neutral-600">
                       {item.name}
                     </span>
-                    <span className="text-lg font-light tabular-nums">
-                      {item.value}
-                    </span>
+                    <span className="text-lg tabular-nums">{item.value}</span>
                   </div>
                 ))
               ) : (
@@ -203,7 +201,7 @@ export default function DashboardPage() {
 
           {/* Lead Pipeline */}
           <div className="bg-white p-6">
-            <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+            <span className="text-sm font-semibold uppercase tracking-wider text-neutral-700">
               Lead Pipeline
             </span>
             <div className="mt-4 space-y-2">
@@ -219,9 +217,7 @@ export default function DashboardPage() {
                         {item.name}
                       </span>
                     </div>
-                    <span className="text-lg font-light tabular-nums">
-                      {item.value}
-                    </span>
+                    <span className="text-lg tabular-nums">{item.value}</span>
                   </div>
                 ))
               ) : (
@@ -232,7 +228,7 @@ export default function DashboardPage() {
 
           {/* Locations */}
           <div className="bg-white p-6 sm:col-span-2 lg:col-span-1">
-            <span className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+            <span className="text-sm font-semibold uppercase tracking-wider text-neutral-700">
               By Location
             </span>
             <div className="mt-4 space-y-2">
@@ -243,9 +239,7 @@ export default function DashboardPage() {
                     <span className="text-sm text-neutral-600">
                       {item.name}
                     </span>
-                    <span className="text-lg font-light tabular-nums">
-                      {item.value}
-                    </span>
+                    <span className="text-lg tabular-nums">{item.value}</span>
                   </div>
                 ))
               ) : (
