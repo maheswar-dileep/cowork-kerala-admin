@@ -1,5 +1,6 @@
 'use client';
 
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -8,8 +9,6 @@ import { Building2, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
-import { authApi } from '@/lib/api/auth';
-import { AxiosError } from 'axios';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,21 +27,24 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setLoginError('');
-      const response = await authApi.login(data);
 
-      if (response.success) {
+      const result = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setLoginError('Invalid email or password');
+        return;
+      }
+
+      if (result?.ok) {
         router.push('/');
+        router.refresh();
       }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        const errorMessage =
-          error.response?.data?.message ||
-          error.response?.data?.error ||
-          'Invalid email or password';
-        setLoginError(errorMessage);
-      } else {
-        setLoginError('An unexpected error occurred');
-      }
+    } catch {
+      setLoginError('An unexpected error occurred');
     }
   };
 
