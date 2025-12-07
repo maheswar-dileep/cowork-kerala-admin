@@ -2,8 +2,10 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { authConfig } from './auth.config';
 import { z } from 'zod';
-import { api } from '@/lib/api';
-import { AxiosError } from 'axios';
+import axios from 'axios';
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8091/api/v1';
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
@@ -18,7 +20,11 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           const { email, password } = parsedCredentials.data;
 
           try {
-            const res = await api.post('/auth/login', { email, password });
+            // Use direct axios call without session interceptor
+            const res = await axios.post(`${API_BASE_URL}/auth/login`, {
+              email,
+              password,
+            });
             const data = res.data;
 
             if (data.success) {
@@ -33,8 +39,8 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
             }
           } catch (error) {
             console.error('Login error:', error);
-            if (error instanceof AxiosError) {
-              console.error('Axios error data:', error.response?.data);
+            if (axios.isAxiosError(error)) {
+              console.error('Auth API error:', error.response?.data);
             }
           }
         }

@@ -6,39 +6,58 @@ import { AppLayout } from '@/components/layout/app-layout';
 import { Header } from '@/components/layout/header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { api } from '@/lib/api';
+import axios from 'axios';
 
 export default function SettingsPage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<{
+    type: 'success' | 'error';
+    text: string;
+  } | null>(null);
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleUpdatePassword = async () => {
+    setMessage(null);
+
     if (!currentPassword || !newPassword || !confirmPassword) {
-      alert('Please fill in all fields');
+      setMessage({ type: 'error', text: 'Please fill in all fields' });
       return;
     }
     if (newPassword !== confirmPassword) {
-      alert('New passwords do not match!');
+      setMessage({ type: 'error', text: 'New passwords do not match' });
       return;
     }
-    if (newPassword.length < 6) {
-      alert('Password must be at least 6 characters');
+    if (newPassword.length < 8) {
+      setMessage({
+        type: 'error',
+        text: 'Password must be at least 8 characters',
+      });
       return;
     }
 
     setIsLoading(true);
     try {
-      // Handle password update logic here
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Password updated successfully!');
+      await api.put('/settings/password', {
+        currentPassword,
+        newPassword,
+      });
+      setMessage({ type: 'success', text: 'Password updated successfully!' });
       handleCancel();
-    } catch {
-      alert('Failed to update password');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.message || 'Failed to update password';
+        setMessage({ type: 'error', text: errorMessage });
+      } else {
+        setMessage({ type: 'error', text: 'An unexpected error occurred' });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -74,6 +93,19 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-5 p-6">
+            {/* Message */}
+            {message && (
+              <div
+                className={`rounded-lg px-4 py-3 text-sm ${
+                  message.type === 'success'
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'bg-red-50 text-red-600'
+                }`}
+              >
+                {message.text}
+              </div>
+            )}
+
             {/* Current Password */}
             <div className="space-y-2">
               <label
@@ -134,6 +166,9 @@ export default function SettingsPage() {
                   )}
                 </button>
               </div>
+              <p className="text-xs text-neutral-500">
+                Must be at least 8 characters
+              </p>
             </div>
 
             {/* Confirm New Password */}
