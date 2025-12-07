@@ -55,7 +55,9 @@ export function LeadDetailModal({
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Lead ID</p>
-                <p className="text-lg font-semibold text-gray-900">{lead.id}</p>
+                <p className="text-lg font-semibold text-gray-900">
+                  {lead.leadId || lead.id}
+                </p>
               </div>
               <Badge
                 variant="secondary"

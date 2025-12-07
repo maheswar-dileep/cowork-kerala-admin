@@ -1,35 +1,133 @@
 'use client';
 
-import { Download } from 'lucide-react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
+import { Download, Loader2 } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Header } from '@/components/layout/header';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { LeadsFilters } from '@/components/leads/leads-filters';
 import { LeadsTable } from '@/components/leads/leads-table';
 import { LeadsPagination } from '@/components/leads/leads-pagination';
-import { leads } from '@/lib/data/leads';
+import { api } from '@/lib/api';
+import type { Lead } from '@/lib/data/leads';
 
-export default function LeadsPage() {
-  const stats = [
+interface LeadsStats {
+  total: number;
+  new: number;
+  contacted: number;
+  qualified: number;
+  converted: number;
+  lost: number;
+}
+
+function LeadsPageContent() {
+  const searchParams = useSearchParams();
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState<LeadsStats>({
+    total: 0,
+    new: 0,
+    contacted: 0,
+    qualified: 0,
+    converted: 0,
+    lost: 0,
+  });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+  });
+
+  const fetchLeads = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const page = searchParams.get('page') || '1';
+      const limit = searchParams.get('limit') || '10';
+      const status = searchParams.get('status') || '';
+      const search = searchParams.get('search') || '';
+
+      const params = new URLSearchParams();
+      params.set('page', page);
+      params.set('limit', limit);
+      if (status && status !== 'all') params.set('status', status);
+      if (search) params.set('search', search);
+
+      const { data } = await api.get(`/leads?${params.toString()}`);
+
+      if (data.success) {
+        setLeads(data.data);
+        setPagination(data.pagination);
+      }
+    } catch (error) {
+      console.error('Failed to fetch leads:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [searchParams]);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      // Fetch all leads to compute stats (or you could have a /leads/stats endpoint)
+      const { data } = await api.get('/leads?limit=1000');
+      if (data.success) {
+        const allLeads = data.data as Lead[];
+        setStats({
+          total: allLeads.length,
+          new: allLeads.filter(l => l.status === 'new').length,
+          contacted: allLeads.filter(l => l.status === 'contacted').length,
+          qualified: allLeads.filter(l => l.status === 'qualified').length,
+          converted: allLeads.filter(l => l.status === 'converted').length,
+          lost: allLeads.filter(l => l.status === 'lost').length,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLeads();
+    fetchStats();
+  }, [fetchLeads, fetchStats]);
+
+  const handleStatusChange = async (leadId: string, newStatus: string) => {
+    try {
+      await api.patch(`/leads/${leadId}`, { status: newStatus });
+      // Refetch leads after status change
+      fetchLeads();
+      fetchStats();
+    } catch (error) {
+      console.error('Failed to update status:', error);
+    }
+  };
+
+  const handleDelete = async (leadId: string) => {
+    try {
+      await api.delete(`/leads/${leadId}`);
+      fetchLeads();
+      fetchStats();
+    } catch (error) {
+      console.error('Failed to delete lead:', error);
+    }
+  };
+
+  const statCards = [
     {
       label: 'Total Enquiries',
-      value: '156',
+      value: String(stats.total),
       className: 'bg-white',
     },
     {
       label: 'Qualified',
-      value: '45',
+      value: String(stats.qualified),
       className: 'bg-white',
     },
-    {
-      label: 'New',
-      value: '32',
-      className: 'bg-white',
-    },
+    { label: 'New', value: String(stats.new), className: 'bg-white' },
     {
       label: 'Converted',
-      value: '28',
+      value: String(stats.converted),
       className: 'bg-white',
     },
   ];
@@ -50,11 +148,11 @@ export default function LeadsPage() {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map(stat => (
+        {statCards.map(stat => (
           <Card key={stat.label} className={`p-6 ${stat.className}`}>
             <p className="text-sm text-gray-600">{stat.label}</p>
             <p className="mt-2 text-3xl font-semibold text-gray-900">
-              {stat.value}
+              {isLoading ? '-' : stat.value}
             </p>
           </Card>
         ))}
@@ -66,16 +164,45 @@ export default function LeadsPage() {
       </div>
 
       {/* Table */}
-      <LeadsTable leads={leads} />
+      {isLoading ? (
+        <div className="flex justify-center p-8">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      ) : (
+        <LeadsTable
+          leads={leads}
+          onStatusChange={handleStatusChange}
+          onDelete={handleDelete}
+        />
+      )}
 
       {/* Pagination */}
       <LeadsPagination
-        currentPage={1}
-        totalPages={1}
-        totalEntries={5}
-        startEntry={1}
-        endEntry={5}
+        currentPage={pagination.page}
+        totalPages={pagination.totalPages}
+        totalEntries={pagination.total}
+        startEntry={(pagination.page - 1) * pagination.limit + 1}
+        endEntry={Math.min(
+          pagination.page * pagination.limit,
+          pagination.total
+        )}
       />
     </AppLayout>
+  );
+}
+
+export default function LeadsPage() {
+  return (
+    <Suspense
+      fallback={
+        <AppLayout>
+          <div className="flex h-[80vh] items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          </div>
+        </AppLayout>
+      }
+    >
+      <LeadsPageContent />
+    </Suspense>
   );
 }

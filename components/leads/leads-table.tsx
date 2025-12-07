@@ -9,16 +9,20 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from '@/components/ui/select';
 import { LeadDetailModal } from './lead-detail-modal';
 import type { Lead } from '@/lib/data/leads';
 
 interface LeadsTableProps {
   leads: Lead[];
+  onStatusChange?: (leadId: string, status: string) => void;
+  onDelete?: (leadId: string) => void;
 }
 
-const statusConfig = {
+const statusConfig: Record<
+  Lead['status'],
+  { label: string; className: string }
+> = {
   new: { label: 'New', className: 'bg-blue-100 text-blue-700' },
   contacted: {
     label: 'Contacted',
@@ -35,7 +39,11 @@ const statusConfig = {
   lost: { label: 'Lost', className: 'bg-red-100 text-red-700' },
 };
 
-export function LeadsTable({ leads }: LeadsTableProps) {
+export function LeadsTable({
+  leads,
+  onStatusChange,
+  onDelete,
+}: LeadsTableProps) {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -44,17 +52,43 @@ export function LeadsTable({ leads }: LeadsTableProps) {
     setIsModalOpen(true);
   };
 
-  const handleClosModal = () => {
+  const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedLead(null);
   };
 
-  const handleDeleteLead = (leadId: string) => {
+  const handleDeleteLead = (lead: Lead) => {
+    const leadId = lead._id || lead.id;
     if (confirm('Are you sure you want to delete this lead?')) {
-      console.log('Delete lead:', leadId);
-      // Handle delete logic here
+      onDelete?.(leadId);
     }
   };
+
+  const handleStatusChange = (lead: Lead, newStatus: string) => {
+    const leadId = lead._id || lead.id;
+    onStatusChange?.(leadId, newStatus);
+  };
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return '-';
+    try {
+      return new Date(dateStr).toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  if (leads.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 p-8 text-gray-500 bg-white rounded-lg border">
+        <p>No leads found.</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -92,7 +126,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
             <tbody className="divide-y divide-gray-200">
               {leads.map(lead => (
                 <tr
-                  key={lead.id}
+                  key={lead._id || lead.id}
                   className="transition-colors hover:bg-gray-50"
                 >
                   <td className="px-4 py-4">
@@ -118,15 +152,12 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                     </div>
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-700">
-                    {lead.date}
+                    {formatDate(lead.date || lead.createdAt)}
                   </td>
                   <td className="px-4 py-4">
                     <Select
-                      defaultValue={lead.status}
-                      onValueChange={value => {
-                        console.log('Status changed to:', value);
-                        // Handle status change here
-                      }}
+                      value={lead.status}
+                      onValueChange={value => handleStatusChange(lead, value)}
                     >
                       <SelectTrigger className="h-auto w-auto border-0 bg-transparent p-0 focus:ring-0">
                         <Badge
@@ -190,7 +221,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
                         <Eye className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => handleDeleteLead(lead.id)}
+                        onClick={() => handleDeleteLead(lead)}
                         className="rounded p-1 text-red-500 hover:bg-red-50 hover:text-red-700"
                         title="Delete lead"
                       >
@@ -208,7 +239,7 @@ export function LeadsTable({ leads }: LeadsTableProps) {
       <LeadDetailModal
         lead={selectedLead}
         isOpen={isModalOpen}
-        onClose={handleClosModal}
+        onClose={handleCloseModal}
       />
     </>
   );
