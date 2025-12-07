@@ -1,14 +1,19 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
+
 interface HeaderProps {
   title: string;
   description?: string;
   breadcrumbs?: { label: string; href?: string }[];
   children?: React.ReactNode;
+  action?: {
+    label: string;
+    onClick: () => void;
+    icon?: React.ElementType;
+    className?: string;
+  };
 }
 
 export function Header({
@@ -16,6 +21,7 @@ export function Header({
   description,
   breadcrumbs,
   children,
+  action,
 }: HeaderProps) {
   return (
     <div className="mb-6">
@@ -39,7 +45,15 @@ export function Header({
           )}
         </div>
 
-        {children && <div className="flex items-center gap-3">{children}</div>}
+        <div className="flex items-center gap-3">
+          {children}
+          {action && (
+            <Button onClick={action.onClick} className={cn(action.className)}>
+              {action.icon && <action.icon className="mr-2 h-4 w-4" />}
+              {action.label}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

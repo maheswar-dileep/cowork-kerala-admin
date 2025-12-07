@@ -1,6 +1,9 @@
 'use client';
 
 import { Input } from '@/components/ui/input';
+
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useDebouncedCallback } from 'use-debounce';
 import {
   Select,
   SelectContent,
@@ -9,9 +12,37 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Search } from 'lucide-react';
-import { spaceTypes, cities, statuses } from '@/lib/data/spaces';
+import { statuses } from '@/lib/data/spaces';
 
 export function SpacesFilters() {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const handleSearch = useDebouncedCallback((term: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (term) {
+      params.set('search', term);
+    } else {
+      params.delete('search');
+    }
+    // Reset to page 1 when searching
+    params.set('page', '1');
+    replace(`${pathname}?${params.toString()}`);
+  }, 300);
+
+  const handleFilter = (key: string, value: string) => {
+    const params = new URLSearchParams(searchParams);
+
+    if (value && value !== 'all') {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
+    params.set('page', '1');
+    replace(`${pathname}?${params.toString()}`);
+  };
+
   return (
     <div className="space-y-4">
       {/* Search and Filters Row */}
@@ -19,48 +50,25 @@ export function SpacesFilters() {
         {/* Search Input */}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Search spaces..." className="pl-9" />
+          <Input
+            placeholder="Search spaces..."
+            className="pl-9"
+            defaultValue={searchParams.get('search')?.toString()}
+            onChange={e => handleSearch(e.target.value)}
+          />
         </div>
 
         {/* Filter Dropdowns */}
         <div className="flex flex-wrap gap-4">
-          <Select defaultValue="all-types">
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="All Types" />
-            </SelectTrigger>
-            <SelectContent>
-              {spaceTypes.map(type => (
-                <SelectItem
-                  key={type}
-                  value={type.toLowerCase().replace(/\s+/g, '-')}
-                >
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select defaultValue="all-cities">
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="All Cities" />
-            </SelectTrigger>
-            <SelectContent>
-              {cities.map(city => (
-                <SelectItem
-                  key={city}
-                  value={city.toLowerCase().replace(/\s+/g, '-')}
-                >
-                  {city}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Select defaultValue="all-status">
+          <Select
+            defaultValue={searchParams.get('status') || 'all'}
+            onValueChange={value => handleFilter('status', value)}
+          >
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
               {statuses.map(status => (
                 <SelectItem
                   key={status}
@@ -75,7 +83,10 @@ export function SpacesFilters() {
           {/* Show Entries */}
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Show</span>
-            <Select defaultValue="10">
+            <Select
+              defaultValue={searchParams.get('limit') || '10'}
+              onValueChange={value => handleFilter('limit', value)}
+            >
               <SelectTrigger className="w-[70px]">
                 <SelectValue />
               </SelectTrigger>

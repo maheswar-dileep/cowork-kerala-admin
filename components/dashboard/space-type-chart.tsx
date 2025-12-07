@@ -9,24 +9,10 @@ const data = [
   { name: 'Virtual Office', value: 25, color: '#2d6a5e' },
 ];
 
-interface PieLabelProps {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  innerRadius: number;
-  outerRadius: number;
-  percent: number;
-}
-
 const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-}: PieLabelProps) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const renderCustomizedLabel = (props: any) => {
+  const { cx, cy, midAngle, innerRadius, outerRadius, percent } = props;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
@@ -72,7 +58,8 @@ export function SpaceTypeChart() {
             <Legend
               verticalAlign="bottom"
               height={36}
-              formatter={(value, entry: { payload: { value: number } }) => (
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              formatter={(value, entry: any) => (
                 <span className="text-sm">
                   {value} - {entry.payload.value}%
                 </span>

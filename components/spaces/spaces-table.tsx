@@ -1,8 +1,5 @@
-'use client';
-
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
 import {
   Table,
   TableBody,
@@ -11,29 +8,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { CoworkingSpace } from '@/lib/data/spaces';
-import { Edit, Eye, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { ISpace } from '@/types';
 
 interface SpacesTableProps {
-  spaces: CoworkingSpace[];
+  spaces: ISpace[];
   onDelete?: (id: string) => void;
+  isLoading?: boolean;
 }
-
-const getTypeBadgeVariant = (
-  type: string
-): 'default' | 'secondary' | 'outline' => {
-  switch (type) {
-    case 'Coworking Space':
-      return 'default';
-    case 'Virtual Office':
-      return 'secondary';
-    case 'Private Office':
-      return 'outline';
-    default:
-      return 'default';
-  }
-};
 
 const getTypeBadgeColor = (type: string): string => {
   switch (type) {
@@ -44,19 +28,15 @@ const getTypeBadgeColor = (type: string): string => {
     case 'Private Office':
       return 'bg-purple-100 text-purple-700 hover:bg-purple-200';
     default:
-      return '';
+      return 'bg-gray-100 text-gray-700';
   }
 };
 
-export function SpacesTable({ spaces, onDelete }: SpacesTableProps) {
+export function SpacesTable({ spaces, onDelete, isLoading }: SpacesTableProps) {
   const router = useRouter();
 
   const handleEdit = (id: string) => {
-    router.push(`/spaces/edit/${id}`);
-  };
-
-  const handleView = (id: string) => {
-    router.push(`/spaces/${id}`);
+    router.push(`/spaces/${id}/edit`);
   };
 
   const handleDelete = (id: string, name: string) => {
@@ -64,6 +44,22 @@ export function SpacesTable({ spaces, onDelete }: SpacesTableProps) {
       onDelete?.(id);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center p-8">
+        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+      </div>
+    );
+  }
+
+  if (spaces?.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-2 p-8 text-gray-500">
+        <p>No spaces found. Create one to get started.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -81,26 +77,41 @@ export function SpacesTable({ spaces, onDelete }: SpacesTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {spaces.map(space => (
-            <TableRow key={space.id}>
+          {spaces?.map(space => (
+            <TableRow key={space._id || space.id}>
               <TableCell>
-                <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-lg bg-muted">
-                  <div className="flex h-full w-full items-center justify-center bg-primary/10 text-xs font-medium text-primary">
-                    {space.name.substring(0, 2).toUpperCase()}
-                  </div>
+                <div className="relative h-14 w-14 overflow-hidden rounded-lg bg-muted">
+                  {space.images && space.images[0] ? (
+                    <Image
+                      src={space.images[0]}
+                      alt={space.spaceName}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-primary/10 text-xs font-medium text-primary">
+                      {space.spaceName?.substring(0, 2).toUpperCase()}
+                    </div>
+                  )}
                 </div>
               </TableCell>
-              <TableCell className="font-medium">{space.name}</TableCell>
+              <TableCell className="font-medium">{space.spaceName}</TableCell>
               <TableCell>
-                <Badge className={getTypeBadgeColor(space.type)}>
-                  {space.type}
+                <Badge className={getTypeBadgeColor(space.spaceType)}>
+                  {space.spaceType}
                 </Badge>
               </TableCell>
-              <TableCell>{space.location}</TableCell>
-              <TableCell>{space.capacity}</TableCell>
-              <TableCell>{space.priceRange}</TableCell>
+              <TableCell>{space.city}</TableCell>
+              <TableCell>-</TableCell>
               <TableCell>
-                <Switch checked={space.status} />
+                {space.pricing?.hotDesk ? `₹${space.pricing.hotDesk}/mo` : '-'}
+              </TableCell>
+              <TableCell>
+                <Badge
+                  variant={space.status === 'active' ? 'default' : 'secondary'}
+                >
+                  {space.status}
+                </Badge>
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-end gap-2">
@@ -108,23 +119,22 @@ export function SpacesTable({ spaces, onDelete }: SpacesTableProps) {
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8"
-                    onClick={() => handleEdit(space.id)}
+                    onClick={() =>
+                      handleEdit(space._id || (space.id as string))
+                    }
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleView(space.id)}
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
                     className="h-8 w-8 text-destructive hover:text-destructive"
-                    onClick={() => handleDelete(space.id, space.name)}
+                    onClick={() =>
+                      handleDelete(
+                        space._id || (space.id as string),
+                        space.spaceName
+                      )
+                    }
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

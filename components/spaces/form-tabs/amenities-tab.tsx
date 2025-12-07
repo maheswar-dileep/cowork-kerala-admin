@@ -1,6 +1,7 @@
 'use client';
 
 import { Checkbox } from '@/components/ui/checkbox';
+import { useFormContext } from 'react-hook-form';
 
 const amenitiesData = {
   infrastructure: [
@@ -42,23 +43,50 @@ const amenitiesData = {
 };
 
 export function AmenitiesTab() {
-  return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <p className="text-sm text-muted-foreground">
-        Select all amenities and features available at this coworking space
-      </p>
+  const { watch, setValue } = useFormContext();
+  const selectedAmenities = watch('amenities') || [];
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+  const toggleAmenity = (amenity: string, checked: boolean) => {
+    if (checked) {
+      setValue('amenities', [...selectedAmenities, amenity]);
+    } else {
+      setValue(
+        'amenities',
+        selectedAmenities.filter((a: string) => a !== amenity)
+      );
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-5xl space-y-8">
+      <div className="space-y-2">
+        <h3 className="text-lg font-medium">Amenities & Features</h3>
+        <p className="text-sm text-muted-foreground">
+          Select all the amenities and features that are available at your
+          coworking space.
+        </p>
+      </div>
+
+      <div className="grid gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-4">
         {/* Infrastructure */}
         <div className="space-y-4">
-          <h3 className="font-semibold">Infrastructure</h3>
-          <div className="space-y-3">
+          <h4 className="text-sm font-medium text-foreground sticky top-0 bg-background/95 backdrop-blur py-2 z-10 border-b">
+            Infrastructure
+          </h4>
+          <div className="space-y-3 pt-1">
             {amenitiesData.infrastructure.map(item => (
-              <div key={item} className="flex items-center space-x-2">
-                <Checkbox id={item} />
+              <div key={item} className="flex items-start space-x-2">
+                <Checkbox
+                  id={item}
+                  checked={selectedAmenities.includes(item)}
+                  onCheckedChange={checked =>
+                    toggleAmenity(item, checked as boolean)
+                  }
+                  className="mt-0.5"
+                />
                 <label
                   htmlFor={item}
-                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm font-normal leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
                 >
                   {item}
                 </label>
@@ -69,14 +97,23 @@ export function AmenitiesTab() {
 
         {/* Workspace Features */}
         <div className="space-y-4">
-          <h3 className="font-semibold">Workspace Features</h3>
-          <div className="space-y-3">
+          <h4 className="text-sm font-medium text-foreground sticky top-0 bg-background/95 backdrop-blur py-2 z-10 border-b">
+            Workspace Features
+          </h4>
+          <div className="space-y-3 pt-1">
             {amenitiesData.workspaceFeatures.map(item => (
-              <div key={item} className="flex items-center space-x-2">
-                <Checkbox id={item} />
+              <div key={item} className="flex items-start space-x-2">
+                <Checkbox
+                  id={item}
+                  checked={selectedAmenities.includes(item)}
+                  onCheckedChange={checked =>
+                    toggleAmenity(item, checked as boolean)
+                  }
+                  className="mt-0.5"
+                />
                 <label
                   htmlFor={item}
-                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm font-normal leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
                 >
                   {item}
                 </label>
@@ -87,14 +124,23 @@ export function AmenitiesTab() {
 
         {/* Office Facilities */}
         <div className="space-y-4">
-          <h3 className="font-semibold">Office Facilities</h3>
-          <div className="space-y-3">
+          <h4 className="text-sm font-medium text-foreground sticky top-0 bg-background/95 backdrop-blur py-2 z-10 border-b">
+            Office Facilities
+          </h4>
+          <div className="space-y-3 pt-1">
             {amenitiesData.officeFacilities.map(item => (
-              <div key={item} className="flex items-center space-x-2">
-                <Checkbox id={item} />
+              <div key={item} className="flex items-start space-x-2">
+                <Checkbox
+                  id={item}
+                  checked={selectedAmenities.includes(item)}
+                  onCheckedChange={checked =>
+                    toggleAmenity(item, checked as boolean)
+                  }
+                  className="mt-0.5"
+                />
                 <label
                   htmlFor={item}
-                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm font-normal leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
                 >
                   {item}
                 </label>
@@ -105,14 +151,23 @@ export function AmenitiesTab() {
 
         {/* Amenities */}
         <div className="space-y-4">
-          <h3 className="font-semibold">Amenities</h3>
-          <div className="space-y-3">
+          <h4 className="text-sm font-medium text-foreground sticky top-0 bg-background/95 backdrop-blur py-2 z-10 border-b">
+            Amenities
+          </h4>
+          <div className="space-y-3 pt-1">
             {amenitiesData.amenities.map(item => (
-              <div key={item} className="flex items-center space-x-2">
-                <Checkbox id={item} />
+              <div key={item} className="flex items-start space-x-2">
+                <Checkbox
+                  id={item}
+                  checked={selectedAmenities.includes(item)}
+                  onCheckedChange={checked =>
+                    toggleAmenity(item, checked as boolean)
+                  }
+                  className="mt-0.5"
+                />
                 <label
                   htmlFor={item}
-                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm font-normal leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer select-none"
                 >
                   {item}
                 </label>

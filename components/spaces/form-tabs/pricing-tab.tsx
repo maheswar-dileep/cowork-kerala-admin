@@ -1,169 +1,148 @@
 'use client';
 
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { useFormContext } from 'react-hook-form';
 
-interface PricingTabProps {
-  spaceType?: string;
-}
+export function PricingTab() {
+  const { register, watch } = useFormContext();
+  const spaceType = watch('spaceType');
 
-export function PricingTab({ spaceType = '' }: PricingTabProps) {
-  const isCoworkingSpace = spaceType === 'coworking-space';
-  const isVirtualOffice = spaceType === 'virtual-office';
-  const isPrivateOffice = spaceType === 'private-office';
+  // Helper to determine if a type is selected or active.
+  const isCoworkingSpace = spaceType === 'Coworking Space';
+  const isVirtualOffice = spaceType === 'Virtual Office';
+  const isPrivateOffice = spaceType === 'Private Office';
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      <p className="text-sm text-muted-foreground">
-        Configure pricing for different space types and services
-      </p>
-
-      {/* Coworking Space */}
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="coworking-space"
-            checked={isCoworkingSpace}
-            disabled={isCoworkingSpace}
-          />
-          <label
-            htmlFor="coworking-space"
-            className="text-base font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Coworking Space
-          </label>
-        </div>
-
-        {isCoworkingSpace && (
-          <div className="ml-6 grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Hot Desk (per month)
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  ₹
-                </span>
-                <Input placeholder="5000" className="pl-7" type="number" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Dedicated Desk (per month)
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  ₹
-                </span>
-                <Input placeholder="8000" className="pl-7" type="number" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Cabin Seat (per month)
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  ₹
-                </span>
-                <Input placeholder="12000" className="pl-7" type="number" />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Total Capacity (persons)
-              </label>
-              <Input placeholder="50" type="number" />
-            </div>
-          </div>
-        )}
+    <div className="mx-auto max-w-4xl space-y-8">
+      <div className="space-y-2">
+        <h3 className="text-lg font-medium">Pricing Configuration</h3>
+        <p className="text-sm text-muted-foreground">
+          Set up pricing plans for your space. Options are customized based on
+          the Space Type selected ({spaceType || 'None'}).
+        </p>
       </div>
 
-      {/* Virtual Office */}
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="virtual-office"
-            checked={isVirtualOffice}
-            disabled={isVirtualOffice}
-          />
-          <label
-            htmlFor="virtual-office"
-            className="text-base font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Virtual Office
-          </label>
-        </div>
-        {isVirtualOffice && (
-          <p className="ml-6 text-sm text-muted-foreground">
-            Virtual Office selected. No additional pricing details required.
+      {!spaceType && (
+        <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg bg-muted/50">
+          <p className="text-muted-foreground mb-2">No Space Type Selected</p>
+          <p className="text-sm text-muted-foreground/80">
+            Please go back to Basic Info and select a space type to configure
+            pricing.
           </p>
-        )}
-      </div>
-
-      {/* Private Office */}
-      <div className="space-y-4">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="private-office"
-            checked={isPrivateOffice}
-            disabled={isPrivateOffice}
-          />
-          <label
-            htmlFor="private-office"
-            className="text-base font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Private Office
-          </label>
         </div>
-        {isPrivateOffice && (
-          <p className="ml-6 text-sm text-muted-foreground">
-            Private Office selected. No additional pricing details required.
-          </p>
-        )}
-      </div>
+      )}
 
-      {/* Additional Services - Only for Coworking Space */}
+      {/* Coworking Space Pricing */}
       {isCoworkingSpace && (
-        <div className="space-y-4 border-t pt-6">
-          <h3 className="font-semibold">Additional Services</h3>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Day Pass Price</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  ₹
-                </span>
-                <Input placeholder="500" className="pl-7" type="number" />
-              </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-3">
+            <label className="text-sm font-medium leading-none">
+              Hot Desk (Monthly)
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                ₹
+              </span>
+              <Input
+                placeholder="5000"
+                className="pl-7"
+                type="number"
+                {...register('pricing.hotDesk')}
+              />
             </div>
+            <p className="text-[0.8rem] text-muted-foreground">
+              Flexible desk in open area
+            </p>
+          </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Meeting Room (per hour)
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  ₹
-                </span>
-                <Input placeholder="300" className="pl-7" type="number" />
-              </div>
+          <div className="space-y-3">
+            <label className="text-sm font-medium leading-none">
+              Dedicated Desk (Monthly)
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                ₹
+              </span>
+              <Input
+                placeholder="8000"
+                className="pl-7"
+                type="number"
+                {...register('pricing.dedicatedDesk')}
+              />
             </div>
+            <p className="text-[0.8rem] text-muted-foreground">
+              Reserved desk for individual
+            </p>
+          </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Conference Room (per hour)
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  ₹
-                </span>
-                <Input placeholder="500" className="pl-7" type="number" />
-              </div>
+          <div className="space-y-3">
+            <label className="text-sm font-medium leading-none">
+              Private Office (Monthly)
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                ₹
+              </span>
+              <Input
+                placeholder="12000"
+                className="pl-7"
+                type="number"
+                {...register('pricing.privateOffice')}
+              />
             </div>
+            <p className="text-[0.8rem] text-muted-foreground">
+              Starting price for private cabins
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Virtual Office Pricing */}
+      {isVirtualOffice && (
+        <div className="max-w-md">
+          <div className="space-y-3">
+            <label className="text-sm font-medium leading-none">
+              Virtual Office Plan (Monthly)
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                ₹
+              </span>
+              <Input
+                placeholder="2000"
+                className="pl-7"
+                type="number"
+                {...register('pricing.privateOffice')}
+              />
+            </div>
+            <p className="text-[0.8rem] text-muted-foreground">
+              Standard monthly rate for business address & mail handling
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Private Office Pricing */}
+      {isPrivateOffice && (
+        <div className="max-w-md">
+          <div className="space-y-3">
+            <label className="text-sm font-medium leading-none">
+              Private Office Rent (Monthly)
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                ₹
+              </span>
+              <Input
+                placeholder="15000"
+                className="pl-7"
+                type="number"
+                {...register('pricing.privateOffice')}
+              />
+            </div>
+            <p className="text-[0.8rem] text-muted-foreground">
+              Base monthly rent for private office space
+            </p>
           </div>
         </div>
       )}

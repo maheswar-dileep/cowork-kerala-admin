@@ -1,49 +1,61 @@
 import { z } from 'zod';
 
-// Basic Info Schema
-export const basicInfoSchema = z.object({
-  spaceName: z
-    .string()
-    .min(1, 'Space name is required')
-    .min(3, 'Space name must be at least 3 characters')
-    .max(100, 'Space name must not exceed 100 characters'),
+export const pricingSchema = z.object({
+  hotDesk: z.coerce.number().positive('Must be positive').optional(),
+  dedicatedDesk: z.coerce.number().positive('Must be positive').optional(),
+  privateOffice: z.coerce.number().positive('Must be positive').optional(),
+});
+
+export const locationSchema = z.object({
+  address: z.string().min(1, 'Address is required'),
+  pincode: z.string().min(1, 'Pincode is required'),
+  landmark: z.string().optional(),
+  latitude: z.coerce.number().optional(),
+  longitude: z.coerce.number().optional(),
+  googleMapsUrl: z.string().optional(),
+});
+
+export const contactSchema = z.object({
+  name: z.string().min(1, 'Contact name is required'),
+  email: z.string().email('Invalid email address'),
+  phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+});
+
+export const spaceSchema = z.object({
+  spaceName: z.string().min(1, 'Space name is required'),
   spaceType: z.string().min(1, 'Space type is required'),
   city: z.string().min(1, 'City is required'),
   spaceCategory: z.string().min(1, 'Space category is required'),
-  shortDescription: z
-    .string()
-    .min(1, 'Short description is required')
-    .min(10, 'Short description must be at least 10 characters')
-    .max(200, 'Short description must not exceed 200 characters'),
-  longDescription: z
-    .string()
-    .min(1, 'Long description is required')
-    .min(50, 'Long description must be at least 50 characters')
-    .max(1000, 'Long description must not exceed 1000 characters'),
+  shortDescription: z.string().optional(),
+  longDescription: z.string().optional(),
+  website: z.string().url().optional().or(z.literal('')),
+  amenities: z.array(z.string()),
+  pricing: pricingSchema.optional(),
+  location: locationSchema.optional(),
+  contact: contactSchema.optional(),
+  images: z.array(z.string().url()),
+  status: z.enum(['active', 'inactive', 'pending']),
 });
 
-// TypeScript type inferred from schema
-export type BasicInfoFormData = z.infer<typeof basicInfoSchema>;
+export type SpaceFormData = z.infer<typeof spaceSchema>;
 
-// Space type options
 export const spaceTypeOptions = [
-  { value: 'coworking-space', label: 'Coworking Space' },
-  { value: 'virtual-office', label: 'Virtual Office' },
-  { value: 'private-office', label: 'Private Office' },
-] as const;
+  { label: 'Coworking Space', value: 'Coworking Space' },
+  { label: 'Virtual Office', value: 'Virtual Office' },
+  { label: 'Private Office', value: 'Private Office' },
+  { label: 'Meeting Room', value: 'Meeting Room' },
+];
 
-// City options
 export const cityOptions = [
-  { value: 'kochi', label: 'Kochi' },
-  { value: 'trivandrum', label: 'Trivandrum' },
-  { value: 'kozhikode', label: 'Kozhikode' },
-  { value: 'thrissur', label: 'Thrissur' },
-  { value: 'kannur', label: 'Kannur' },
-] as const;
+  { label: 'Kochi', value: 'Kochi' },
+  { label: 'Trivandrum', value: 'Trivandrum' },
+  { label: 'Kozhikode', value: 'Kozhikode' },
+  { label: 'Thrissur', value: 'Thrissur' },
+  { label: 'Kannur', value: 'Kannur' },
+];
 
-// Category options
 export const categoryOptions = [
-  { value: 'premium', label: 'Premium' },
-  { value: 'standard', label: 'Standard' },
-  { value: 'budget', label: 'Budget' },
-] as const;
+  { label: 'Budget', value: 'Budget' },
+  { label: 'Premium', value: 'Premium' },
+  { label: 'Luxury', value: 'Luxury' },
+];
